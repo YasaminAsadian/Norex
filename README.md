@@ -20,9 +20,9 @@ The tool is portable. You can move `Norex Poster Tool - Portable.html` to anothe
 
 In the GitHub repo, go to `Settings` > `Pages`.
 
-Set `Source` to `Deploy from a branch`.
+Set `Source` to `GitHub Actions`.
 
-Set `Branch` to `main` and folder to `/ (root)`, then save.
+After that, every push to `main` automatically redeploys the live site.
 
 After GitHub finishes deploying, the site will be available at:
 
