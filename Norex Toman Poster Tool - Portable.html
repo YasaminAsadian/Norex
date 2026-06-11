@@ -516,6 +516,62 @@
       ctx.restore();
     }
 
+    function measureTextSequence(text, tracking) {
+      var chars = String(text).split("");
+      var width = 0;
+      for (var i = 0; i < chars.length; i += 1) {
+        width += ctx.measureText(chars[i]).width;
+        if (i < chars.length - 1) {
+          width += tracking;
+        }
+      }
+      return width;
+    }
+
+    function drawTextSequence(text, x, y, options) {
+      var chars = String(text).split("");
+      var size = options.size;
+      var minSize = options.minSize || size;
+      var family = options.family;
+      var weight = options.weight || "900";
+      var tracking = options.tracking || 0;
+      var font;
+      var width;
+      var startX;
+      var i;
+
+      ctx.save();
+      while (size > minSize) {
+        font = weight + " " + size + "px " + family;
+        ctx.font = font;
+        width = measureTextSequence(text, tracking);
+        if (!options.maxWidth || width <= options.maxWidth) {
+          break;
+        }
+        size -= 1;
+      }
+
+      ctx.font = weight + " " + size + "px " + family;
+      width = measureTextSequence(text, tracking);
+      ctx.fillStyle = options.fill;
+      ctx.textAlign = "left";
+      ctx.textBaseline = options.baseline || "top";
+      ctx.direction = "ltr";
+      if (options.shadow) {
+        ctx.shadowColor = options.shadow.color;
+        ctx.shadowBlur = options.shadow.blur;
+        ctx.shadowOffsetX = options.shadow.x;
+        ctx.shadowOffsetY = options.shadow.y;
+      }
+
+      startX = options.align === "right" ? x - width : x - width / 2;
+      for (i = 0; i < chars.length; i += 1) {
+        ctx.fillText(chars[i], startX, y);
+        startX += ctx.measureText(chars[i]).width + tracking;
+      }
+      ctx.restore();
+    }
+
     function applyPoster() {
       if (!template.complete || !template.naturalWidth) {
         status.textContent = "Template is still loading.";
@@ -548,19 +604,27 @@
         shadow: { color: "rgba(255, 232, 160, 0.18)", blur: 1, x: 0, y: 1 }
       });
 
-      drawText(formatMoneyText(data.sellValue), 400, 715, {
-        font: '900 84px "SF Arabic", "Geeza Pro", "Arial Unicode MS", Arial, sans-serif',
+      drawTextSequence(formatMoneyText(data.sellValue), 400, 715, {
+        weight: "900",
+        size: 84,
+        minSize: 68,
+        maxWidth: 350,
+        family: '"Geeza Pro", "Arial Unicode MS", Arial, Helvetica, sans-serif',
         fill: "#f7f7f7",
         align: "center",
-        direction: "ltr",
+        tracking: -2,
         shadow: { color: "rgba(0, 0, 0, 0.8)", blur: 8, x: 0, y: 6 }
       });
 
-      drawText(formatMoneyText(data.buyValue), 835, 715, {
-        font: '900 84px "SF Arabic", "Geeza Pro", "Arial Unicode MS", Arial, sans-serif',
+      drawTextSequence(formatMoneyText(data.buyValue), 835, 715, {
+        weight: "900",
+        size: 84,
+        minSize: 68,
+        maxWidth: 350,
+        family: '"Geeza Pro", "Arial Unicode MS", Arial, Helvetica, sans-serif',
         fill: "#f7f7f7",
         align: "center",
-        direction: "ltr",
+        tracking: -2,
         shadow: { color: "rgba(0, 0, 0, 0.8)", blur: 8, x: 0, y: 6 }
       });
 
