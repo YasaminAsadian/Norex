@@ -726,7 +726,7 @@
       var count = 0;
 
       if (!/^[0-9]+$/.test(cleaned)) {
-        return toPersianDigits(value);
+        return toEnglishDigits(value);
       }
 
       for (i = cleaned.length - 1; i >= 0; i -= 1) {
@@ -736,7 +736,7 @@
         result = cleaned.charAt(i) + result;
         count += 1;
       }
-      return toPersianDigits(result);
+      return result;
     }
 
     function drawText(poster, text, x, y, options) {
