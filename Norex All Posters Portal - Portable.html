@@ -758,11 +758,26 @@
       ctx.restore();
     }
 
-    function measureTextSequence(ctx, text, tracking) {
+    function sequenceCharScale(char, options) {
+      return char === "," && options.commaScale ? options.commaScale : 1;
+    }
+
+    function measureTextSequence(ctx, text, size, tracking, options) {
       var chars = String(text).split("");
       var width = 0;
-      for (var i = 0; i < chars.length; i += 1) {
+      var originalFont = ctx.font;
+      var scale;
+      var i;
+
+      for (i = 0; i < chars.length; i += 1) {
+        scale = sequenceCharScale(chars[i], options);
+        if (scale !== 1) {
+          ctx.font = (options.weight || "900") + " " + Math.round(size * scale) + "px " + options.family;
+        }
         width += ctx.measureText(chars[i]).width;
+        if (scale !== 1) {
+          ctx.font = originalFont;
+        }
         if (i < chars.length - 1) {
           width += tracking;
         }
@@ -781,13 +796,15 @@
       var font;
       var width;
       var startX;
+      var scale;
+      var charY;
       var i;
 
       ctx.save();
       while (size > minSize) {
         font = weight + " " + size + "px " + family;
         ctx.font = font;
-        width = measureTextSequence(ctx, text, tracking);
+        width = measureTextSequence(ctx, text, size, tracking, options);
         if (!options.maxWidth || width <= options.maxWidth) {
           break;
         }
@@ -795,7 +812,7 @@
       }
 
       ctx.font = weight + " " + size + "px " + family;
-      width = measureTextSequence(ctx, text, tracking);
+      width = measureTextSequence(ctx, text, size, tracking, options);
       ctx.fillStyle = options.fill;
       ctx.textAlign = "left";
       ctx.textBaseline = options.baseline || "top";
@@ -809,8 +826,17 @@
 
       startX = options.align === "right" ? x - width : x - width / 2;
       for (i = 0; i < chars.length; i += 1) {
-        ctx.fillText(chars[i], startX, y);
+        scale = sequenceCharScale(chars[i], options);
+        charY = y;
+        if (scale !== 1) {
+          ctx.font = weight + " " + Math.round(size * scale) + "px " + family;
+          charY += options.commaYOffset || Math.round(size * 0.24);
+        }
+        ctx.fillText(chars[i], startX, charY);
         startX += ctx.measureText(chars[i]).width + tracking;
+        if (scale !== 1) {
+          ctx.font = weight + " " + size + "px " + family;
+        }
       }
       ctx.restore();
     }
@@ -1080,6 +1106,8 @@
         fill: "#f7f7f7",
         align: "center",
         tracking: -2,
+        commaScale: 0.54,
+        commaYOffset: 26,
         shadow: { color: "rgba(0, 0, 0, 0.8)", blur: 8, x: 0, y: 6 }
       });
 
@@ -1092,6 +1120,8 @@
         fill: "#f7f7f7",
         align: "center",
         tracking: -2,
+        commaScale: 0.54,
+        commaYOffset: 26,
         shadow: { color: "rgba(0, 0, 0, 0.8)", blur: 8, x: 0, y: 6 }
       });
 
