@@ -349,10 +349,6 @@
               Date
               <input id="world-date" type="date" value="2026-06-30" />
             </label>
-            <label hidden>
-              Badge number
-              <input id="world-days" type="number" min="0" step="1" inputmode="numeric" value="11" />
-            </label>
             <label>
               Output name
               <input id="world-filename" type="text" value="norex-currency-rates.png" />
@@ -483,7 +479,6 @@
   </main>
 
   <script>
-    var worldCupStart = "2026-06-11";
     var worldCurrencies = [
       ["USD", "1.435", "1.390"],
       ["EUR", "1.649", "1.596"],
@@ -702,23 +697,6 @@
       }
     }
 
-    function daysUntilWorldCup(dateString) {
-      var parts = dateString.split("-");
-      var targetParts = worldCupStart.split("-");
-      var current = Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      var target = Date.UTC(Number(targetParts[0]), Number(targetParts[1]) - 1, Number(targetParts[2]));
-      return Math.max(0, Math.round((target - current) / 86400000));
-    }
-
-    function worldCupBadgeNumber(dateString) {
-      var parts = dateString.split("-");
-      var targetParts = worldCupStart.split("-");
-      var current = Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      var target = Date.UTC(Number(targetParts[0]), Number(targetParts[1]) - 1, Number(targetParts[2]));
-      var dayOffset = Math.round((current - target) / 86400000);
-      return dayOffset >= 0 ? dayOffset + 1 : daysUntilWorldCup(dateString);
-    }
-
     function formatMoneyText(value) {
       var cleaned = toEnglishDigits(trimText(value)).replace(/[,\u066C\u060C\s]/g, "");
       var result = "";
@@ -928,7 +906,6 @@
       }
       return {
         date: document.getElementById("world-date").value,
-        daysToGo: trimText(document.getElementById("world-days").value) || "0",
         filename: trimText(document.getElementById("world-filename").value) || "norex-currency-rates.png",
         rates: rates
       };
@@ -940,12 +917,8 @@
       var i;
       var storedRates = {};
       document.getElementById("world-date").value = dateValue;
-      document.getElementById("world-days").value = String(worldCupBadgeNumber(dateValue));
       if (!stored) {
         return;
-      }
-      if (stored.daysToGo || stored.daysToGo === 0) {
-        document.getElementById("world-days").value = stored.daysToGo;
       }
       if (stored.filename) {
         document.getElementById("world-filename").value = stored.filename;
@@ -1331,13 +1304,6 @@
       }
     }
 
-    function updateWorldDaysFromDate() {
-      var dateValue = document.getElementById("world-date").value;
-      if (dateValue) {
-        document.getElementById("world-days").value = String(worldCupBadgeNumber(dateValue));
-      }
-    }
-
     function loadPosterImage(key, drawFunction) {
       var poster = posters[key];
       poster.image.onload = drawFunction;
@@ -1362,7 +1328,6 @@
     applyDateData();
     setupTabs();
 
-    document.getElementById("world-date").addEventListener("change", updateWorldDaysFromDate);
     document.getElementById("world-apply").addEventListener("click", drawWorld);
     document.getElementById("world-download").addEventListener("click", function () {
       downloadPoster("world", drawWorld, getWorldData().filename);
