@@ -493,12 +493,12 @@
       ["MXN", "0.084", "0.077"]
     ];
     var worldRatePositions = {
-      USD: { sellTop: 486, buyTop: 529 },
-      EUR: { sellTop: 606, buyTop: 649 },
-      GBP: { sellTop: 726, buyTop: 769 },
-      JPY: { sellTop: 846, buyTop: 889 },
-      USDT: { sellTop: 966, buyTop: 1009 },
-      MXN: { sellTop: 1086, buyTop: 1129 }
+      USD: { sellTop: 489, buyTop: 533 },
+      EUR: { sellTop: 610, buyTop: 655 },
+      GBP: { sellTop: 728, buyTop: 772 },
+      JPY: { sellTop: 842, buyTop: 886 },
+      USDT: { sellTop: 953, buyTop: 997 },
+      MXN: { sellTop: 1060, buyTop: 1102 }
     };
 
     var posters = {
@@ -908,16 +908,34 @@
 
       ctx.save();
       ctx.fillStyle = "#061936";
-      ctx.fillRect(405, 385, 210, 42);
-      ctx.fillRect(690, 385, 170, 42);
+      ctx.fillRect(398, 384, 235, 42);
+      ctx.fillRect(690, 384, 180, 42);
 
-      ctx.fillStyle = "#f8f2ec";
       for (i = 0; i < worldCurrencies.length; i += 1) {
-        row = worldCurrencies[i][0];
-        pos = worldRatePositions[row];
-        ctx.fillRect(650, pos.sellTop - 4, 155, 48);
-        ctx.fillRect(650, pos.buyTop - 4, 155, 48);
+        row = worldCurrencies[i];
+        pos = worldRatePositions[row[0]];
+        eraseWorldRateText(poster, row[1], 668, pos.sellTop);
+        eraseWorldRateText(poster, row[2], 668, pos.buyTop);
       }
+      ctx.restore();
+    }
+
+    function eraseWorldRateText(poster, text, x, y) {
+      var ctx = poster.ctx;
+      var gradient = ctx.createLinearGradient(646, 0, 806, 0);
+      gradient.addColorStop(0, "#f4f1ed");
+      gradient.addColorStop(1, "#ebe3d8");
+
+      ctx.save();
+      ctx.font = "900 43px Arial, Helvetica, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = gradient;
+      ctx.fillStyle = gradient;
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
       ctx.restore();
     }
 
